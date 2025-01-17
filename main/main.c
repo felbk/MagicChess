@@ -9,6 +9,7 @@
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
+#include "src/pico_servo.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -38,6 +39,8 @@
 
 #define STDBY  10
 #define DelayMin  100 // tempo minimo de delay em us
+
+#define servopin 22
 
 #define mm_por_step  0.8
 
@@ -229,7 +232,7 @@ int main() {
     pinos_e_irq();
 
     // int step = 0;
-
+    
 
     uart_init(UART_ID, BAUD_RATE);
 
@@ -246,7 +249,9 @@ int main() {
     bool aceitar = 0;
     int posbarra =0;
     
+    servo_enable(servopin);
 
+    servo_set_position(servopin, 90);
     set_origem();
 
     
@@ -260,7 +265,7 @@ int main() {
             //printf("readable \n");
             ch = uart_getc(UART_ID);
 
-            if (i==0 && (ch != 'N' && ch != 'S' && ch != 'L' && ch != 'O') ){protvalid = 0 ;} //iniciar sem letra
+            if (i==0 && (ch != 'N' && ch != 'S' && ch != 'L' && ch != 'O' && ch != 'G') ){protvalid = 0 ;} //iniciar sem letra
             if (i >= digitosmax){protvalid = 0 ; } //ultrapassar tamanho
             if (i == digitosmax-1 && ch!='/'){protvalid = 0;} // não finalizar com /
 
@@ -291,7 +296,12 @@ int main() {
                     num +=  (protocol[posbarra-j] - 48) * expon(10,(j-1)) ;
                     j++;
                    }
-                if (num == 0){
+                if (protocol[0] == 'G' ){
+                    if (num >= 0 && num <=180){
+                        servo_set_position(servopin,num);
+                    } else{ printf( '\npara controlar o servo, insira um numero entre 0 e 180\n');}
+                }
+                else if (num == 0){
                     set_origem();
                 }else{
                 ctr_motor( protocol[0] , (num / 0.8));
