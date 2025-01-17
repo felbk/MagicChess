@@ -246,8 +246,8 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         servo_set_position(servopin,180);
         sleep_ms(400);
         //Ir para quina da casa
-        ctr_motor('N', mm_por_casa/2);
-        ctr_motor('L', mm_por_casa/2);
+        ctr_motor('N', (mm_por_casa/2)-5);
+        ctr_motor('L', (mm_por_casa/2)-5);
                     }
     if (x >= 0){ //para leste
         ctr_motor('L', x * mm_por_casa );
@@ -264,8 +264,8 @@ void mover(int Xi , int Yi , int Xf , int Yf){
     if (i == 1){
         
         //Ir para meio da casa
-        ctr_motor('S', mm_por_casa/2);
-        ctr_motor('O', mm_por_casa/2);
+        ctr_motor('S', (mm_por_casa/2)-5);
+        ctr_motor('O', (mm_por_casa/2)-5);
                     }
         //Devolve peça 
         servo_set_position(servopin,0);
@@ -304,7 +304,7 @@ int main() {
 
     mover(6 , 1 , 8,3);
     sleep_ms(1000);
-    mover(8 , 3 , 6,1);
+    mover(8 , 3 , 1,8);
     
    
 
