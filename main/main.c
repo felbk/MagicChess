@@ -41,7 +41,7 @@
 
 #define mm_por_step  0.8
 
-#define steps_margin 20
+#define steps_margin 10
 
 volatile bool STOP_N = 0;
 volatile bool STOP_S = 0;
