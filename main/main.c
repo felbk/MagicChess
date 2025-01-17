@@ -43,6 +43,7 @@
 #define servopin 22
 
 #define mm_por_step  0.8
+#define mm_por_casa 35
 
 #define steps_margin 10
 
@@ -173,12 +174,12 @@ void passo_motor(int steps , uint8_t Sentido){
     }
 }
 
-void ctr_motor( uint8_t Sentido , int Steps){
+void ctr_motor( uint8_t Sentido , int mm){
     //executa passo
     gpio_put(PWM_A,1);
     gpio_put(PWM_B,1);
     gpio_put(STDBY,1);
-    passo_motor( Steps, Sentido);
+    passo_motor( mm / mm_por_step, Sentido);
     gpio_put(STDBY, 0);
 }
 void corrigir(){
@@ -222,6 +223,8 @@ void set_origem(){
         STOP = 0;
         STOP_O = 0;
         STOP_S = 0;
+    ctr_motor('N', 10 );
+    ctr_motor('L', 40 );
 }
 
 
@@ -304,7 +307,7 @@ int main() {
                 else if (num == 0){
                     set_origem();
                 }else{
-                ctr_motor( protocol[0] , (num / 0.8));
+                ctr_motor( protocol[0] , (num ));
 
                 }
             }
