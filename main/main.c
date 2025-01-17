@@ -350,7 +350,7 @@ int main() {
                 if (protocol[0] == 'G' ){
                     if (num >= 0 && num <=180){
                         servo_set_position(servopin,num);
-                    } else{ printf( '\npara controlar o servo, insira um numero entre 0 e 180\n');}
+                    } else{ printf( "\npara controlar o servo, insira um numero entre 0 e 180\n");}
                 }
                 else if (num == 0){
                     set_origem();
