@@ -53,6 +53,9 @@ volatile bool STOP_O = 0;
 volatile bool STOP_L = 0;
 volatile bool STOP = 0;
 
+int Xm = 1;
+int Ym = 1;
+
 int expon(int base , int exp){
     int resp = 1;
     for (int i= 0 ; i < exp ; i++){
@@ -227,7 +230,47 @@ void set_origem(){
     ctr_motor('L', 40 );
 }
 
+int letra_para_numero(uint8_t letra){
+    return (((int)letra)- 64);
+}
 
+void mover(int Xi , int Yi , int Xf , int Yf){
+    int x = (Xi - Xm);
+    int y = (Yi - Ym);
+    for (int i=0 ; i<2; i++){
+
+    if (i == 1){
+        x = (Xf - Xi);
+        y = (Yf - Yi);
+        //coletar peça 
+        servo_set_position(servopin,180);
+        sleep_ms(400);
+        //Ir para quina da casa
+        ctr_motor('N', mm_por_casa/2);
+        ctr_motor('L', mm_por_casa/2);
+                    }
+    if (x >= 0){ //para leste
+        ctr_motor('L', x * mm_por_casa );
+    } else{ // para oeste
+        ctr_motor('O', -x * mm_por_casa );
+    }
+    if (y >= 0){ //para norte
+        ctr_motor('N', y * mm_por_casa );
+    } else{ // para sul
+        ctr_motor('S', -y * mm_por_casa );
+    }
+    Xm += x;
+    Ym += y;
+    if (i == 1){
+        
+        //Ir para meio da casa
+        ctr_motor('S', mm_por_casa/2);
+        ctr_motor('O', mm_por_casa/2);
+                    }
+        //Devolve peça 
+        servo_set_position(servopin,0);
+    }
+}
 
 int main() {
     stdio_init_all();
@@ -251,12 +294,17 @@ int main() {
     bool tratar = 0;
     bool aceitar = 0;
     int posbarra =0;
+
     
     servo_enable(servopin);
 
     servo_set_position(servopin, 90);
+ 
     set_origem();
 
+    mover(6 , 1 , 8,3);
+    sleep_ms(1000);
+    mover(8 , 3 , 6,1);
     
    
 
