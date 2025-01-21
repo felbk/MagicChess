@@ -123,54 +123,80 @@ void pinos_e_irq(void){
 
 
 void passo_motor(int steps , uint8_t Sentido){
-    int hor[4][4] = {
+    int hor[8][4] = {
         {1,0,0,0},
+        {1,0,1,0},
         {0,0,1,0},
+        {0,1,1,0},
         {0,1,0,0},
+        {0,1,0,1},
         {0,0,0,1},
+        {1,0,0,1}
     };
-    int anti[4][4] = {
+    int anti[8][4] = {
         {0,0,0,1},
+        {0,1,0,1},
         {0,1,0,0},
+        {0,1,1,0},
         {0,0,1,0},
+        {1,0,1,0},
         {1,0,0,0},
+        {1,0,0,1}
     };
 
-    bool m1; // true para sentido horario
-    bool m2;
+    int m1; // true para sentido horario
+    int m2;
     if (Sentido == 'L'){
-        m1 = true;
-        m2 = true;
+        m1 = 1;
+        m2 = 1;
     }
       if (Sentido == 'O'){
-        m1 = false;
-        m2 = false;
+        m1 = 0;
+        m2 = 0;
     }
       if (Sentido == 'N'){
-        m1 = true;
-        m2 = false;
+        m1 = 1;
+        m2 = 0;
     }
     if (Sentido == 'S'){
-        m1 = false;
-        m2 = true;
+        m1 = 0;
+        m2 = 1;
+    }
+     if (Sentido == 'A'){
+        m1 = 0;
+        m2 = 2;
+    }
+    if (Sentido == 'E'){
+        m1 = 1;
+        m2 = 2;
+    }
+    if (Sentido == 'Q'){
+        m1 = 2;
+        m2 = 0;
+    }
+     if (Sentido == 'D'){
+        m1 = 2;
+        m2 = 1;
     }
 
+    if (m1 ==2 || m2 == 2){steps = steps *2;}
     for ( int i=0 ; i<steps ; i++){
     if (!STOP){
-    for (int linha = 0 ; linha<4 ; linha++){
-        if (m1){
+    for (int linha = 0 ; linha<8 ; linha++){
+        if (m1 == 1){
             gpio_put(A1 , hor[linha][0]); gpio_put(B1 , hor[linha][1]); gpio_put(C1 , hor[linha][2]); gpio_put(D1 , hor[linha][3]);
             
-        }else{
+        }else if (m1 == 0){
             gpio_put(A1 , anti[linha][0]); gpio_put(B1 , anti[linha][1]); gpio_put(C1 , anti[linha][2]); gpio_put(D1 , anti[linha][3]);
-        }
-        if (m2){
+        } 
+        if (m2 == 1){
             gpio_put(A2, hor[linha][0]); gpio_put(B2, hor[linha][1]); gpio_put(C2, hor[linha][2]); gpio_put(D2, hor[linha][3]);
             
-        }else{
+        }else if (m2 == 0){
             gpio_put(A2, anti[linha][0]); gpio_put(B2, anti[linha][1]); gpio_put(C2, anti[linha][2]); gpio_put(D2, anti[linha][3]);
         }
-        sleep_ms(2);
+        sleep_ms(1.5);
+        if (m1 == 2 || m2 == 2){ sleep_ms(1.5);}
     }
     }
     
@@ -237,6 +263,24 @@ int letra_para_numero(uint8_t letra){
 void mover(int Xi , int Yi , int Xf , int Yf){
     int x = (Xi - Xm);
     int y = (Yi - Ym);
+    bool E = 0 ;
+    bool A = 0;
+    bool D = 0 ;
+    bool Q = 0;
+
+    if (Xf - Xi == Yf - Yi || -(Xf - Xi) == Yf - Yi ){
+        if (Xf - Xi == Yf - Yi){
+            if (Xf - Xi >=0) {
+                E = 1;
+            } else{ A =1 ;}
+        }
+        else{
+            if (Xf - Xi >=0) {
+                Q = 1;
+            } else{ D =1 ; }
+        }
+    } 
+
     for (int i=0 ; i<2; i++){
 
     if (i == 1){
@@ -246,9 +290,30 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         servo_set_position(servopin,180);
         sleep_ms(400);
         //Ir para quina da casa
+        if (!Q && !E && !A && !D){
         ctr_motor('N', (mm_por_casa/2)-5);
         ctr_motor('L', (mm_por_casa/2)-5);
+
+        }else{
+            if (E){ ctr_motor('E', x * mm_por_casa );
+
+            }
+            if (D){ ctr_motor('D', x * mm_por_casa );
+                
+            }
+            if (A){ ctr_motor('A', -x * mm_por_casa );
+                
+            }
+            if (Q){ ctr_motor('Q', -x * mm_por_casa );
+                
+            }
+        }
                     }
+
+    if (i==0 || (!Q && !E && !A && !D)){ 
+    
+    
+    
     if (x >= 0){ //para leste
         ctr_motor('L', x * mm_por_casa );
     } else{ // para oeste
@@ -259,16 +324,20 @@ void mover(int Xi , int Yi , int Xf , int Yf){
     } else{ // para sul
         ctr_motor('S', -y * mm_por_casa );
     }
+    
+    }
     Xm += x;
     Ym += y;
     if (i == 1){
         
         //Ir para meio da casa
+        if (!Q && !E && !A && !D){
         ctr_motor('S', (mm_por_casa/2)-5);
-        ctr_motor('O', (mm_por_casa/2)-5);
+        ctr_motor('O', (mm_por_casa/2)-5);}
                     }
         //Devolve peça 
         servo_set_position(servopin,0);
+    
     }
 }
 
@@ -277,7 +346,7 @@ int main() {
 
     pinos_e_irq();
 
-    // int step = 0;
+
     
 
     uart_init(UART_ID, BAUD_RATE);
@@ -302,9 +371,9 @@ int main() {
  
     set_origem();
 
-    mover(6 , 1 , 8,3);
-    sleep_ms(1000);
-    mover(8 , 3 , 1,8);
+    mover(6 , 1 , 6,6);
+    sleep_ms(800);
+    
     
    
 
@@ -316,7 +385,7 @@ int main() {
             //printf("readable \n");
             ch = uart_getc(UART_ID);
 
-            if (i==0 && (ch != 'N' && ch != 'S' && ch != 'L' && ch != 'O' && ch != 'G') ){protvalid = 0 ;} //iniciar sem letra
+            if (i==0 && (ch != 'N' && ch != 'S' && ch != 'L' && ch != 'O' && ch != 'G' && ch != 'Q' && ch != 'A' && ch != 'D' && ch != 'E') ){protvalid = 0 ;} //iniciar sem letra
             if (i >= digitosmax){protvalid = 0 ; } //ultrapassar tamanho
             if (i == digitosmax-1 && ch!='/'){protvalid = 0;} // não finalizar com /
 
