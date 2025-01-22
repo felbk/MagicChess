@@ -37,7 +37,8 @@
 #define PWM_A  12
 #define PWM_B  11
 
-#define STDBY  10
+#define STDBY  9
+#define STDBY2 10
 #define DelayMin  100 // tempo minimo de delay em us
 
 #define servopin 22
@@ -47,7 +48,7 @@
 
 #define steps_margin 10
 
-#define maxservo 175
+#define maxservo 180
 
 volatile bool STOP_N = 0;
 volatile bool STOP_S = 0;
@@ -69,7 +70,7 @@ int expon(int base , int exp){
 void btn_callback(uint gpio, uint32_t events){
     // callbak para fim de curso
     if (events == GPIO_IRQ_EDGE_FALL){
-        STOP = 1;
+        if (gpio == BT1 || gpio == BT2 || gpio == BT3 || gpio == BT4 ){STOP = 1;}
         if (gpio == BT1){STOP_N = 1;}
         if (gpio == BT2){STOP_S = 1;}
         if (gpio == BT3){STOP_O = 1;}
@@ -90,6 +91,7 @@ void pinos_e_irq(void){
     gpio_init(PWM_A);
     gpio_init(PWM_B);
     gpio_init(STDBY);
+    gpio_init(STDBY2);
     gpio_init(BT1);
     gpio_init(BT2);
     gpio_init(BT3);
@@ -107,6 +109,7 @@ void pinos_e_irq(void){
     gpio_set_dir(PWM_A , true); // true para saida
     gpio_set_dir(PWM_B , true); // true para saida
     gpio_set_dir(STDBY , true); // true para saida
+    gpio_set_dir(STDBY2 , true); // true para saida
     gpio_set_dir(BT1, false);
     gpio_set_dir(BT2, false);
     gpio_set_dir(BT3, false);
@@ -145,16 +148,16 @@ void passo_motor(int steps , uint8_t Sentido){
         {1,0,0,0},
         {1,0,0,1}
     };
-    int desativada[8][4] = {
-        {0,0,0,0},
-        {0,0,0,0},
-        {0,0,0,0},
-        {0,0,0,0},
-        {0,0,0,0},
-        {0,0,0,0},
-        {0,0,0,0},
-        {0,0,0,0}
-    };
+    // int desativada[8][4] = {
+    //     {0,0,0,0},
+    //     {0,0,0,0},
+    //     {0,0,0,0},
+    //     {0,0,0,0},
+    //     {0,0,0,0},
+    //     {0,0,0,0},
+    //     {0,0,0,0},
+    //     {0,0,0,0}
+    // };
 
     int m1; // true para sentido horario
     int m2;
@@ -192,6 +195,7 @@ void passo_motor(int steps , uint8_t Sentido){
     }
 
     if (m1 ==2 || m2 == 2){steps = steps *2;}
+    
     for ( int i=0 ; i<steps ; i++){
     if (!STOP){
     for (int linha = 0 ; linha<8 ; linha++){
@@ -201,16 +205,16 @@ void passo_motor(int steps , uint8_t Sentido){
             
         }else if (m1 == 0){
             gpio_put(A1 , anti[linha][0]); gpio_put(B1 , anti[linha][1]); gpio_put(C1 , anti[linha][2]); gpio_put(D1 , anti[linha][3]);
-        } else{
-            gpio_put(A1 , desativada[linha][0]); gpio_put(B1 , desativada[linha][1]); gpio_put(C1 , desativada[linha][2]); gpio_put(D1 , desativada[linha][3]);
+        } else if (m1 == 2){
+             gpio_put(STDBY, 0);
         }
         if (m2 == 1){
             gpio_put(A2, hor[linha][0]); gpio_put(B2, hor[linha][1]); gpio_put(C2, hor[linha][2]); gpio_put(D2, hor[linha][3]);
             
         }else if (m2 == 0){
             gpio_put(A2, anti[linha][0]); gpio_put(B2, anti[linha][1]); gpio_put(C2, anti[linha][2]); gpio_put(D2, anti[linha][3]);
-        } else{
-             gpio_put(A2, desativada[linha][0]); gpio_put(B2, desativada[linha][1]); gpio_put(C2, desativada[linha][2]); gpio_put(D2, desativada[linha][3]);
+        } else if(m2 == 2){
+              gpio_put(STDBY2, 0);
         }
         
         
@@ -227,12 +231,15 @@ void ctr_motor( uint8_t Sentido , int mm){
     gpio_put(PWM_A,1);
     gpio_put(PWM_B,1);
     gpio_put(STDBY,1);
+    gpio_put(STDBY2,1);
     passo_motor( mm / mm_por_step, Sentido);
     gpio_put(STDBY, 0);
+    gpio_put(STDBY2, 0);
 }
 void corrigir(){
     printf("\nVoltando para area segura");
-    gpio_put(STDBY , 1); 
+    gpio_put(STDBY , 1);
+    gpio_put(STDBY2 , 1); 
     gpio_put(PWM_A , 1); 
     gpio_put(PWM_B , 1); 
     //voltar o motor
@@ -254,6 +261,7 @@ void corrigir(){
 
     
     gpio_put(STDBY , 0); 
+    gpio_put(STDBY2 , 0);
 }
 
 void set_origem(){
@@ -281,7 +289,7 @@ int letra_para_numero(uint8_t letra){
 
 void mover(int Xi , int Yi , int Xf , int Yf){
     
-    servo_set_position(servopin,0);
+    //servo_set_position(servopin,0);
     
     int x = (Xi - Xm);
     int y = (Yi - Ym);
@@ -315,7 +323,7 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         
         sleep_ms(600);
         //Ir para quina da casa
-        if (!Q && !E && !A && !D){
+        if (!Q && !E && !A && !D && x!= 0 && y!=0){
         ctr_motor('N', (mm_por_casa/2));
         ctr_motor('L', (mm_por_casa/2));
 
@@ -356,7 +364,7 @@ void mover(int Xi , int Yi , int Xf , int Yf){
     if (i == 1){
         
         //Ir para meio da casa
-        if (!Q && !E && !A && !D){
+        if (!Q && !E && !A && !D && x != 0 && y!= 0){
         ctr_motor('S', (mm_por_casa/2));
         ctr_motor('O', (mm_por_casa/2));
         }
@@ -415,6 +423,10 @@ int main() {
     mover(7,1 , 6,3);
 
     mover(8,3 , 6,1);
+
+    mover(5,2 , 5 ,4);
+
+    mover(6,1 , 1,6);
      
     mover(8,2 , 8,4);
     
