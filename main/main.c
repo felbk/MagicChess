@@ -47,7 +47,7 @@
 
 #define steps_margin 10
 
-#define maxservo 150
+#define maxservo 175
 
 volatile bool STOP_N = 0;
 volatile bool STOP_S = 0;
@@ -280,7 +280,9 @@ int letra_para_numero(uint8_t letra){
 }
 
 void mover(int Xi , int Yi , int Xf , int Yf){
+    
     servo_set_position(servopin,0);
+    
     int x = (Xi - Xm);
     int y = (Yi - Ym);
     bool E = 0 ;
@@ -301,19 +303,21 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         }
     } 
 
-    for (int i=0 ; i<2; i++){
+    for (int i=0 ; i<2; i++){ 
 
     if (i == 1){
         x = (Xf - Xi);
         y = (Yf - Yi);
         //coletar peça 
         sleep_ms(200);
+        
         servo_set_position(servopin,maxservo);
+        
         sleep_ms(600);
         //Ir para quina da casa
         if (!Q && !E && !A && !D){
-        ctr_motor('N', (mm_por_casa/2)-5);
-        ctr_motor('L', (mm_por_casa/2)-5);
+        ctr_motor('N', (mm_por_casa/2));
+        ctr_motor('L', (mm_por_casa/2));
 
         }else{
             if (E){ ctr_motor('E', x * mm_por_casa );
@@ -353,18 +357,22 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         
         //Ir para meio da casa
         if (!Q && !E && !A && !D){
-        ctr_motor('S', (mm_por_casa/2)-5);
-        ctr_motor('O', (mm_por_casa/2)-5);}
+        ctr_motor('S', (mm_por_casa/2));
+        ctr_motor('O', (mm_por_casa/2));
+        }
                     }
         //Devolve peça 
         sleep_ms(600);
+        
         servo_set_position(servopin,0);
+        
         sleep_ms(200);
     
     }
 }
 int main() {
     stdio_init_all();
+    
 
     pinos_e_irq();
 
@@ -389,22 +397,27 @@ int main() {
     
     servo_enable(servopin);
 
-    servo_set_position(servopin, 90);
+    servo_set_position(servopin, 0);
+    
  
     set_origem();
 
-    mover(4,4 , 3,4);
-    sleep_ms(500);
-    mover(3,4 , 4,4);
-    sleep_ms(500);
-    mover(4,4 , 5,4);
-    sleep_ms(500);
-    mover(5,4 , 4,4);
-    sleep_ms(500);
-    mover(4,4 , 1,1);
-     sleep_ms(500);
-    mover(1,1 , 8,8);
-    mover(2,3 , 1,5);
+    mover(7,2 , 7,4);
+    
+    mover(6,1 , 8,3);
+    
+    mover(2,1 , 3,3);
+    
+    mover(1,2 , 1,4);
+
+    mover(1,1 , 1,3);
+    
+    mover(7,1 , 6,3);
+
+    mover(8,3 , 6,1);
+     
+    mover(8,2 , 8,4);
+    
    
     
     
@@ -452,7 +465,9 @@ int main() {
                    }
                 if (protocol[0] == 'G' ){
                     if (num >= 0 && num <=maxservo){
+                        
                         servo_set_position(servopin,num);
+                        
                     } else{ printf( "\npara controlar o servo, insira um numero entre 0 e 180\n");}
                 }
                 else if (num == 0){
