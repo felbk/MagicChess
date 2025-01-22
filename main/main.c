@@ -47,6 +47,8 @@
 
 #define steps_margin 10
 
+#define maxservo 150
+
 volatile bool STOP_N = 0;
 volatile bool STOP_S = 0;
 volatile bool STOP_O = 0;
@@ -143,6 +145,16 @@ void passo_motor(int steps , uint8_t Sentido){
         {1,0,0,0},
         {1,0,0,1}
     };
+    int desativada[8][4] = {
+        {0,0,0,0},
+        {0,0,0,0},
+        {0,0,0,0},
+        {0,0,0,0},
+        {0,0,0,0},
+        {0,0,0,0},
+        {0,0,0,0},
+        {0,0,0,0}
+    };
 
     int m1; // true para sentido horario
     int m2;
@@ -183,20 +195,27 @@ void passo_motor(int steps , uint8_t Sentido){
     for ( int i=0 ; i<steps ; i++){
     if (!STOP){
     for (int linha = 0 ; linha<8 ; linha++){
+        
         if (m1 == 1){
             gpio_put(A1 , hor[linha][0]); gpio_put(B1 , hor[linha][1]); gpio_put(C1 , hor[linha][2]); gpio_put(D1 , hor[linha][3]);
             
         }else if (m1 == 0){
             gpio_put(A1 , anti[linha][0]); gpio_put(B1 , anti[linha][1]); gpio_put(C1 , anti[linha][2]); gpio_put(D1 , anti[linha][3]);
-        } 
+        } else{
+            gpio_put(A1 , desativada[linha][0]); gpio_put(B1 , desativada[linha][1]); gpio_put(C1 , desativada[linha][2]); gpio_put(D1 , desativada[linha][3]);
+        }
         if (m2 == 1){
             gpio_put(A2, hor[linha][0]); gpio_put(B2, hor[linha][1]); gpio_put(C2, hor[linha][2]); gpio_put(D2, hor[linha][3]);
             
         }else if (m2 == 0){
             gpio_put(A2, anti[linha][0]); gpio_put(B2, anti[linha][1]); gpio_put(C2, anti[linha][2]); gpio_put(D2, anti[linha][3]);
+        } else{
+             gpio_put(A2, desativada[linha][0]); gpio_put(B2, desativada[linha][1]); gpio_put(C2, desativada[linha][2]); gpio_put(D2, desativada[linha][3]);
         }
-        sleep_ms(1.5);
-        if (m1 == 2 || m2 == 2){ sleep_ms(1.5);}
+        
+        
+        if (m1 == 2 || m2 == 2){ sleep_us(800);} else {sleep_us(800);}
+        
     }
     }
     
@@ -261,6 +280,7 @@ int letra_para_numero(uint8_t letra){
 }
 
 void mover(int Xi , int Yi , int Xf , int Yf){
+    servo_set_position(servopin,0);
     int x = (Xi - Xm);
     int y = (Yi - Ym);
     bool E = 0 ;
@@ -276,8 +296,8 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         }
         else{
             if (Xf - Xi >=0) {
-                Q = 1;
-            } else{ D =1 ; }
+                D = 1;
+            } else{ Q =1 ; }
         }
     } 
 
@@ -287,8 +307,9 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         x = (Xf - Xi);
         y = (Yf - Yi);
         //coletar peça 
-        servo_set_position(servopin,180);
-        sleep_ms(400);
+        sleep_ms(200);
+        servo_set_position(servopin,maxservo);
+        sleep_ms(600);
         //Ir para quina da casa
         if (!Q && !E && !A && !D){
         ctr_motor('N', (mm_por_casa/2)-5);
@@ -336,11 +357,12 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         ctr_motor('O', (mm_por_casa/2)-5);}
                     }
         //Devolve peça 
+        sleep_ms(600);
         servo_set_position(servopin,0);
+        sleep_ms(200);
     
     }
 }
-
 int main() {
     stdio_init_all();
 
@@ -371,8 +393,20 @@ int main() {
  
     set_origem();
 
-    mover(6 , 1 , 6,6);
-    sleep_ms(800);
+    mover(4,4 , 3,4);
+    sleep_ms(500);
+    mover(3,4 , 4,4);
+    sleep_ms(500);
+    mover(4,4 , 5,4);
+    sleep_ms(500);
+    mover(5,4 , 4,4);
+    sleep_ms(500);
+    mover(4,4 , 1,1);
+     sleep_ms(500);
+    mover(1,1 , 8,8);
+    mover(2,3 , 1,5);
+   
+    
     
     
    
@@ -417,7 +451,7 @@ int main() {
                     j++;
                    }
                 if (protocol[0] == 'G' ){
-                    if (num >= 0 && num <=180){
+                    if (num >= 0 && num <=maxservo){
                         servo_set_position(servopin,num);
                     } else{ printf( "\npara controlar o servo, insira um numero entre 0 e 180\n");}
                 }
