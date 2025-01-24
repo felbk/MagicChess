@@ -19,26 +19,28 @@
 #define UART_RX_PIN 1   
 #define digitosmax  5
 
-#define A1 14
-#define B1 15
-#define C1 16
-#define D1 17
+//PRIMEIRO MOTOR (SUDOESTE)
+#define A1 14 //porta conectada ao AI1 do driver 
+#define B1 15 // AI2
+#define C1 16 //BI1
+#define D1 17 //BI2
 
-#define A2 18
-#define B2 19
-#define C2 20
-#define D2 21
+//SEGUNDO MOTOR (SUDESTE)
+#define A2 18 //AI1 (DRIVER)
+#define B2 19 //AI2
+#define C2 20 //BI1
+#define D2 21 //BI2
 
-#define BT1 2
-#define BT2 3
-#define BT3 4
-#define BT4 5
+#define BT1 2 //BOTÃO AZUL (NORTE)
+#define BT2 3 // AMARELO (SUL)
+#define BT3 4 // VERDE (OESTE)
+#define BT4 5 //VERMELHO (LESTE)
 
-#define PWM_A  12
+#define PWM_A  12 
 #define PWM_B  11
 
-#define STDBY  9
-#define STDBY2 10
+#define STDBY  9 //MOTOR 1
+#define STDBY2 10 //MOTOR 2
 #define DelayMin  100 // tempo minimo de delay em us
 
 #define servopin 22
@@ -48,17 +50,20 @@
 
 #define steps_margin 10
 
-#define maxservo 180
+#define maxservo 180 //Posição para atrair a peça 
 
+//variáveis globais de ativação da parada de fim de curso em cada botão 
 volatile bool STOP_N = 0;
 volatile bool STOP_S = 0;
 volatile bool STOP_O = 0;
 volatile bool STOP_L = 0;
 volatile bool STOP = 0;
 
-int Xm = 1;
+//posições da máquina 
+int Xm = 1; 
 int Ym = 1;
 
+//função exponencial 
 int expon(int base , int exp){
     int resp = 1;
     for (int i= 0 ; i < exp ; i++){
@@ -67,6 +72,7 @@ int expon(int base , int exp){
     return resp;
 }
 
+//ativação da variável de parada
 void btn_callback(uint gpio, uint32_t events){
     // callbak para fim de curso
     if (events == GPIO_IRQ_EDGE_FALL){
@@ -79,6 +85,7 @@ void btn_callback(uint gpio, uint32_t events){
     }
 }
 
+//inicialização e set de direção dos pinos
 void pinos_e_irq(void){
     gpio_init(A1);
     gpio_init(B1);
@@ -110,15 +117,18 @@ void pinos_e_irq(void){
     gpio_set_dir(PWM_B , true); // true para saida
     gpio_set_dir(STDBY , true); // true para saida
     gpio_set_dir(STDBY2 , true); // true para saida
-    gpio_set_dir(BT1, false);
+    gpio_set_dir(BT1, false); //false para entrada 
     gpio_set_dir(BT2, false);
     gpio_set_dir(BT3, false);
     gpio_set_dir(BT4, false);
+
+//define os botões como pull up interno
     gpio_pull_up(BT1);
     gpio_pull_up(BT2);
     gpio_pull_up(BT3);
     gpio_pull_up(BT4);
 
+//ativa a função de callback para cada botão 
     gpio_set_irq_enabled_with_callback(BT1, GPIO_IRQ_EDGE_FALL , true , &btn_callback);
     gpio_set_irq_enabled(BT2 , GPIO_IRQ_EDGE_FALL , true);
     gpio_set_irq_enabled(BT3 , GPIO_IRQ_EDGE_FALL , true);
@@ -127,7 +137,10 @@ void pinos_e_irq(void){
 }
 
 
+//função para mover o motor de a cordo com o sentido
 void passo_motor(int steps , uint8_t Sentido){
+
+//sequências de ativação de cada pino do motor
     int hor[8][4] = {
         {1,0,0,0},
         {1,0,1,0},
@@ -158,8 +171,8 @@ void passo_motor(int steps , uint8_t Sentido){
     //     {0,0,0,0},
     //     {0,0,0,0}
     // };
-
-    int m1; // true para sentido horario
+//sentido dos motores 1 e 2
+    int m1; // true para sentido horario e false para anti horário 
     int m2;
     if (Sentido == 'L'){
         m1 = 1;
@@ -198,6 +211,7 @@ void passo_motor(int steps , uint8_t Sentido){
     
     for ( int i=0 ; i<steps ; i++){
     if (!STOP){
+
     for (int linha = 0 ; linha<8 ; linha++){
         
         if (m1 == 1){
@@ -226,6 +240,7 @@ void passo_motor(int steps , uint8_t Sentido){
     }
 }
 
+//realiza o passo com o motor
 void ctr_motor( uint8_t Sentido , int mm){
     //executa passo
     gpio_put(PWM_A,1);
@@ -236,6 +251,7 @@ void ctr_motor( uint8_t Sentido , int mm){
     gpio_put(STDBY, 0);
     gpio_put(STDBY2, 0);
 }
+//move a máquina para o sentido oposto de sua colisão com o botão de fim de curso
 void corrigir(){
     printf("\nVoltando para area segura");
     gpio_put(STDBY , 1);
@@ -264,6 +280,7 @@ void corrigir(){
     gpio_put(STDBY2 , 0);
 }
 
+//move o motor até que chegue na quina inferior esquerdo (origem)
 void set_origem(){
     while(!STOP_S){
         ctr_motor('S',3000);
@@ -283,10 +300,12 @@ void set_origem(){
     ctr_motor('L', 40 );
 }
 
+//função para retornar a posição de uma letra maiúscula no alfabeto 
 int letra_para_numero(uint8_t letra){
     return (((int)letra)- 64);
 }
 
+//função para mover uma peça de uma casa a outra
 void mover(int Xi , int Yi , int Xf , int Yf){
     
     //servo_set_position(servopin,0);
