@@ -63,6 +63,17 @@ volatile bool STOP = 0;
 int Xm = 1; 
 int Ym = 1;
 
+uint8_t tabuleiro[8][8]={
+    {'T','C','B','Q','K','B','C','T'},
+    {'P','P','P','P','P','P','P','P'},
+    {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+    {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+    {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+    {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+    {'P','P','P','P','P','P','P','P'},
+    {'T','C','B','Q','K','B','C','T'},
+};
+
 //função exponencial 
 int expon(int base , int exp){
     int resp = 1;
@@ -305,6 +316,16 @@ int letra_para_numero(uint8_t letra){
     return (((int)letra)- 64);
 }
 
+//função para analisar captura 
+uint64_t analise(int Xi, int Yi , int Xf , int Yf){
+ uint8_t pecaMovida = tabuleiro[Xi][Yi];
+ uint8_t destino = tabuleiro[Xf][Yf];
+ tabuleiro[Xi][Yi]= 0;
+ tabuleiro[Xf][Yf] = pecaMovida;
+ if (destino == 0){return 'vazio';}
+ if(destino != 0){return 'captura';}
+
+}
 //função para mover uma peça de uma casa a outra
 void mover(int Xi , int Yi , int Xf , int Yf){
     
@@ -316,6 +337,7 @@ void mover(int Xi , int Yi , int Xf , int Yf){
     bool A = 0;
     bool D = 0 ;
     bool Q = 0;
+
 
     if (Xf - Xi == Yf - Yi || -(Xf - Xi) == Yf - Yi ){
         if (Xf - Xi == Yf - Yi){
@@ -343,7 +365,8 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         sleep_ms(600);
         //Ir para quina da casa
         if (!Q && !E && !A && !D && x!= 0 && y!=0){
-        ctr_motor('N', (mm_por_casa/2));
+        if (Xi <=4 ){ctr_motor('N', (mm_por_casa/2));}
+        else{ctr_motor('S', (mm_por_casa/2));}
         ctr_motor('L', (mm_por_casa/2));
 
         }else{
@@ -384,7 +407,8 @@ void mover(int Xi , int Yi , int Xf , int Yf){
         
         //Ir para meio da casa
         if (!Q && !E && !A && !D && x != 0 && y!= 0){
-        ctr_motor('S', (mm_por_casa/2));
+        if (Xi <=4 ){ctr_motor('S', (mm_por_casa/2));}
+        else{ctr_motor('N', (mm_por_casa/2));}
         ctr_motor('O', (mm_por_casa/2));
         }
                     }
@@ -397,6 +421,26 @@ void mover(int Xi , int Yi , int Xf , int Yf){
     
     }
 }
+
+void comando(){
+    bool reading = true;
+    int Xi;
+    int Xf;
+    int Yi;
+    int Yf;
+    while (reading){
+
+    }
+    if(analise(Xi,Yi,Xf,Yf)=='captura'){
+        if (Xf <=4){
+            if (Yf <=4 ){mover(Xf,Yf,Yf+1,0);}
+            else{mover(Xf,Yf,Yf-1,0);}
+        }
+        
+    }
+    mover(Xi,Yi,Xf,Yf);
+}
+
 int main() {
     stdio_init_all();
     
@@ -429,25 +473,25 @@ int main() {
  
     set_origem();
 
-    mover(7,2 , 7,4);
+    // mover(7,2 , 7,4);
     
-    mover(6,1 , 8,3);
+    // mover(6,1 , 8,3);
     
-    mover(2,1 , 3,3);
+    // mover(2,1 , 3,3);
     
-    mover(1,2 , 1,4);
+    // mover(1,2 , 1,4);
 
-    mover(1,1 , 1,3);
+    // mover(1,1 , 1,3);
     
-    mover(7,1 , 6,3);
+    // mover(7,1 , 6,3);
 
-    mover(8,3 , 6,1);
+    // mover(8,3 , 6,1);
 
-    mover(5,2 , 5 ,4);
+    // mover(5,2 , 5 ,4);
 
-    mover(6,1 , 1,6);
+    // mover(6,1 , 1,6);
      
-    mover(8,2 , 8,4);
+    // mover(8,2 , 8,4);
     
    
     
@@ -458,6 +502,8 @@ int main() {
     while (true) {
 
         if (!STOP) { //Sem detecção de fim de curso
+
+            comando();
 
             if (uart_is_readable(UART_ID)){
             //printf("readable \n");
