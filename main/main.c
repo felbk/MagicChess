@@ -430,12 +430,12 @@ void mover(int Xi , int Yi , int Xf , int Yf){
 int coleta_botão(int adcnumber){
     adc_select_input(adcnumber);
     int result = 0 ;
-            while (adc_read() < 600){
+            while (adc_read() < 1500){
 
             }
         for (int i=1 ; i<=100; i ++){
             int leitura = adc_read();
-            if (leitura>600){
+            if (leitura>1500){
             result+= leitura * 0.01;}
             else{
                 result += leitura / i;
@@ -444,34 +444,43 @@ int coleta_botão(int adcnumber){
             
         }
     int out = 0;
-        if (result > 600){      
-    if (result <=850){ 
+        if (result > 1500){      
+    if (result <=1600){ 
         out=1;
+        printf("1");
     }
-    else if(result <= 980){
+    else if(result <= 1700){
         out=2;
-    }
-    else if(result <= 1110){
-      out=3;
-    }
-    else if(result <=1380){
-        out=4;
+        printf("2");
     }
     else if(result <= 1800){
-        out=5;
-    }   
-    else if(result<=2500){
-        out=6;
+      out=3;
+      printf("3");
     }
-    else if(result <= 3500){
+    else if(result <=2000){
+        out=4;
+        printf("4");
+    }
+    else if(result <= 2400){
+        out=5;
+        printf("5");
+    }   
+    else if(result<=3000){
+        out=6;
+        printf("6");
+    }
+    else if(result <= 3800){
         out=7;
+        printf("7");
     }
     else{
         out=8;
+        printf("8");
     }
     
     }
     
+    printf("saiu"); printf('\n');
     return out;
 }
 
@@ -626,7 +635,8 @@ int main() {
 
         if (!STOP) { //Sem detecção de fim de curso
 
-            Jogando();
+           coleta_botão(0);
+           sleep_ms(500);
           //controle_serial();
             
          
