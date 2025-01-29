@@ -10,6 +10,7 @@
 #include "hardware/uart.h"
 #include "hardware/irq.h"
 #include "src/pico_servo.h"
+#include "hardware/adc.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -44,6 +45,8 @@
 #define DelayMin  100 // tempo minimo de delay em us
 
 #define servopin 22
+
+#define ADC0 26
 
 #define mm_por_step  0.8
 #define mm_por_casa 35
@@ -114,6 +117,8 @@ void pinos_e_irq(void){
     gpio_init(BT2);
     gpio_init(BT3);
     gpio_init(BT4);
+    adc_init();
+    adc_gpio_init(ADC0);
 
 
     gpio_set_dir(B1 , true); // true para saida
@@ -316,15 +321,15 @@ int letra_para_numero(uint8_t letra){
     return (((int)letra)- 64);
 }
 
-//função para analisar captura 
+//função para analisar c 
 uint64_t analise(int Xi, int Yi , int Xf , int Yf){
  uint8_t pecaMovida = tabuleiro[Xi][Yi];
  uint8_t destino = tabuleiro[Xf][Yf];
  tabuleiro[Xi][Yi]= 0;
  tabuleiro[Xf][Yf] = pecaMovida;
- if (destino == 0){return 'vazio';}
- if(destino != 0){return 'captura';}
-
+ if (destino == 0){return 'v';}
+ if(destino != 0){return 'c';}else{return 'v';}
+ 
 }
 //função para mover uma peça de uma casa a outra
 void mover(int Xi , int Yi , int Xf , int Yf){
@@ -422,42 +427,88 @@ void mover(int Xi , int Yi , int Xf , int Yf){
     }
 }
 
+int coleta_botão(int adcnumber){
+    adc_select_input(adcnumber);
+    int result = 0 ;
+            while (adc_read() < 600){
+
+            }
+        for (int i=1 ; i<=100; i ++){
+            int leitura = adc_read();
+            if (leitura>600){
+            result+= leitura * 0.01;}
+            else{
+                result += leitura / i;
+            }
+           
+            
+        }
+    int out = 0;
+        if (result > 600){      
+    if (result <=850){ 
+        out=1;
+    }
+    else if(result <= 980){
+        out=2;
+    }
+    else if(result <= 1110){
+      out=3;
+    }
+    else if(result <=1380){
+        out=4;
+    }
+    else if(result <= 1800){
+        out=5;
+    }   
+    else if(result<=2500){
+        out=6;
+    }
+    else if(result <= 3500){
+        out=7;
+    }
+    else{
+        out=8;
+    }
+    
+    }
+    
+    return out;
+}
+
 void comando(){
-    bool reading = true;
+    
     int Xi;
     int Xf;
     int Yi;
     int Yf;
-    while (reading){
+    Xi = coleta_botão(0);
+    servo_set_position(servopin,130);
+    servo_set_position(servopin,0);
 
-    }
-    if(analise(Xi,Yi,Xf,Yf)=='captura'){
-        if (Xf <=4){
-            if (Yf <=4 ){mover(Xf,Yf,Yf+1,0);}
-            else{mover(Xf,Yf,Yf-1,0);}
-        }
+    Yi = coleta_botão(0);
+    servo_set_position(servopin,130);
+    servo_set_position(servopin,0);
+
+    Xf= coleta_botão(0);
+    servo_set_position(servopin,130);
+    servo_set_position(servopin,0);
+
+    Yf= coleta_botão(0);
+    servo_set_position(servopin,130);
+    servo_set_position(servopin,0);
+   
+    if(analise(Xi,Yi,Xf,Yf)=='c'){
+      
+            if (Yf <=4 ){mover(Xf,Yf,0,Yf+1);}
+            else{mover(Xf,Yf,0,Yf-1);}
+        
         
     }
     mover(Xi,Yi,Xf,Yf);
 }
 
-int main() {
-    stdio_init_all();
-    
-
-    pinos_e_irq();
-
-
-    
-
-    uart_init(UART_ID, BAUD_RATE);
-
-  
-    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
-    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
-
-    
-    uint8_t ch;
+void controle_serial(){
+      uint8_t ch;
     uint8_t protocol[digitosmax];
     int i=0;
     bool protvalid = 1;
@@ -465,47 +516,7 @@ int main() {
     bool aceitar = 0;
     int posbarra =0;
 
-    
-    servo_enable(servopin);
-
-    servo_set_position(servopin, 0);
-    
- 
-    set_origem();
-
-    // mover(7,2 , 7,4);
-    
-    // mover(6,1 , 8,3);
-    
-    // mover(2,1 , 3,3);
-    
-    // mover(1,2 , 1,4);
-
-    // mover(1,1 , 1,3);
-    
-    // mover(7,1 , 6,3);
-
-    // mover(8,3 , 6,1);
-
-    // mover(5,2 , 5 ,4);
-
-    // mover(6,1 , 1,6);
-     
-    // mover(8,2 , 8,4);
-    
-   
-    
-    
-    
-   
-
-    while (true) {
-
-        if (!STOP) { //Sem detecção de fim de curso
-
-            comando();
-
-            if (uart_is_readable(UART_ID)){
+    if (uart_is_readable(UART_ID)){
             //printf("readable \n");
             ch = uart_getc(UART_ID);
 
@@ -569,6 +580,55 @@ int main() {
             
             
             }
+}
+
+int main() {
+    stdio_init_all();
+    pinos_e_irq();
+    uart_init(UART_ID, BAUD_RATE);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
+
+  
+
+    servo_enable(servopin);
+    servo_set_position(servopin, 0);
+ 
+    set_origem();
+
+    // mover(7,2 , 7,4);
+    
+    // mover(6,1 , 8,3);
+    
+    // mover(2,1 , 3,3);
+    
+    // mover(1,2 , 1,4);
+
+    // mover(1,1 , 1,3);
+    
+    // mover(7,1 , 6,3);
+
+    // mover(8,3 , 6,1);
+
+    // mover(5,2 , 5 ,4);
+
+    // mover(6,1 , 1,6);
+     
+    // mover(8,2 , 8,4);
+    
+   
+    
+    
+    
+   
+
+    while (true) {
+
+        if (!STOP) { //Sem detecção de fim de curso
+
+            comando();
+          //controle_serial();
+            
          
         }
 
