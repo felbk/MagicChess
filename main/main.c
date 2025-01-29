@@ -475,7 +475,7 @@ int coleta_botão(int adcnumber){
     return out;
 }
 
-void comando(){
+void Jogando(){
     
     int Xi;
     int Xf;
@@ -626,7 +626,7 @@ int main() {
 
         if (!STOP) { //Sem detecção de fim de curso
 
-            comando();
+            Jogando();
           //controle_serial();
             
          
