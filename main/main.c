@@ -118,6 +118,7 @@ void pinos_e_irq(void){
     gpio_init(BT3);
     gpio_init(BT4);
     adc_init();
+    
     adc_gpio_init(ADC0);
 
 
@@ -430,12 +431,12 @@ void mover(int Xi , int Yi , int Xf , int Yf){
 int coleta_botão(int adcnumber){
     adc_select_input(adcnumber);
     int result = 0 ;
-            while (adc_read() < 1500){
+            while (adc_read() < 1150){
 
             }
         for (int i=1 ; i<=100; i ++){
             int leitura = adc_read();
-            if (leitura>1500){
+            if (leitura>1150){
             result+= leitura * 0.01;}
             else{
                 result += leitura / i;
@@ -443,6 +444,7 @@ int coleta_botão(int adcnumber){
            
             
         }
+      printf("Raw value: 0x%03x, voltage: %f V\n", result, result);
     int out = 0;
         if (result > 1500){      
     if (result <=1600){ 
@@ -635,8 +637,8 @@ int main() {
 
         if (!STOP) { //Sem detecção de fim de curso
 
-           coleta_botão(0);
-           sleep_ms(500);
+    
+        coleta_botão(0);
           //controle_serial();
             
          
