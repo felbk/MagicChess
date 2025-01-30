@@ -323,7 +323,7 @@ int letra_para_numero(uint8_t letra){
 }
 
 //função para analisar c 
-uint64_t analise(int Xi, int Yi , int Xf , int Yf){
+uint8_t analise(int Xi, int Yi , int Xf , int Yf){
  uint8_t pecaMovida = tabuleiro[Xi][Yi];
  uint8_t destino = tabuleiro[Xf][Yf];
  tabuleiro[Xi][Yi]= 0;
@@ -431,84 +431,90 @@ void mover(int Xi , int Yi , int Xf , int Yf){
 int coleta_botão(int adcnumber){
     adc_select_input(adcnumber);
     int result = 0 ;
-            while (adc_read() < 1150){
+            while (adc_read() < 500){
 
             }
-        for (int i=1 ; i<=100; i ++){
+        for (int i=1 ; i<=10; i ++){
             int leitura = adc_read();
-            if (leitura>1150){
-            result+= leitura * 0.01;}
+            if (leitura>500){
+            result+= leitura * 0.1;}
             else{
                 result += leitura / i;
             }
            
             
         }
-      printf("Raw value: 0x%03x, voltage: %f V\n", result, result);
+      
     int out = 0;
-        if (result > 1500){      
-    if (result <=1600){ 
+        if (result > 500){      
+    if (result <=680){ 
         out=1;
-        printf("1");
+        // printf("1");
     }
-    else if(result <= 1700){
+    else if(result <= 780){
         out=2;
-        printf("2");
+        // printf("2");
     }
-    else if(result <= 1800){
+    else if(result <= 980){
       out=3;
-      printf("3");
+    //   printf("3");
     }
-    else if(result <=2000){
+    else if(result <=1280){
         out=4;
-        printf("4");
+        // printf("4");
     }
-    else if(result <= 2400){
+    else if(result <= 1680){
         out=5;
-        printf("5");
+        // printf("5");
     }   
-    else if(result<=3000){
+    else if(result<=2680){
         out=6;
-        printf("6");
+        // printf("6");
     }
-    else if(result <= 3800){
+    else if(result <= 3580){
         out=7;
-        printf("7");
+        // printf("7");
     }
     else{
         out=8;
-        printf("8");
+        // printf("8");
     }
     
     }
     
-    printf("saiu"); printf('\n');
+    //  printf("\n");
+    sleep_ms(50);
     return out;
 }
 
 void Jogando(){
     
-    int Xi;
-    int Xf;
-    int Yi;
-    int Yf;
-    Xi = coleta_botão(0);
+    int Xi = 0 ;
+    int Xf = 0 ;
+    int Yi = 0 ;
+    int Yf = 0 ;
+    while (Xi == 0){Xi = coleta_botão(0);}
     servo_set_position(servopin,130);
+    sleep_ms(200);
+    servo_set_position(servopin,0);
+    
+
+    while (Yi == 0){Yi = coleta_botão(0);}
+    servo_set_position(servopin,130);
+    sleep_ms(200);
     servo_set_position(servopin,0);
 
-    Yi = coleta_botão(0);
+    while (Xf == 0){Xf = coleta_botão(0);}
     servo_set_position(servopin,130);
+    sleep_ms(200);
     servo_set_position(servopin,0);
 
-    Xf= coleta_botão(0);
+    while (Yf == 0){Yf = coleta_botão(0);}
     servo_set_position(servopin,130);
-    servo_set_position(servopin,0);
-
-    Yf= coleta_botão(0);
-    servo_set_position(servopin,130);
+    sleep_ms(200);
     servo_set_position(servopin,0);
    
-    if(analise(Xi,Yi,Xf,Yf)=='c'){
+    if(analise(Xi,Yi,Xf,Yf)=='c'){ // analise de captura 
       
             if (Yf <=4 ){mover(Xf,Yf,0,Yf+1);}
             else{mover(Xf,Yf,0,Yf-1);}
@@ -638,7 +644,7 @@ int main() {
         if (!STOP) { //Sem detecção de fim de curso
 
     
-        coleta_botão(0);
+        Jogando();
           //controle_serial();
             
          
