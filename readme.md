@@ -79,12 +79,12 @@ Para compor a parte eletrônica do projeto foram utilizados os seguintes materia
 
 Durante os primeiros testes os componentes foram inseridos na protoboard e conectados utilizando jumpers, porém posteriormente as ligações foram transpostas para a placa de circuito perfurada(imagem 1) e as conexões foram soldadas com fios menores no verso da placa seguindo o esquema (imagem 2). 
 
-Imagem 1 - Placa de circuito perfurada![](Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.001.jpeg)
+Imagem 1 - Placa de circuito perfurada![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.001.jpeg)
 
 
 Imagem 2 - Esquema elétrico
 
-![](Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.002.png)
+![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.002.png)
 
 Como pode-se observar no esquema, o controle de PWM (Pulse Width Modulation) dos dois drivers foram unificados para facilitar o controle e as conexões
 
@@ -92,11 +92,11 @@ Além disso, os drivers (imagem 3) precisam ser alimentados com 12V para os moto
 
 Imagem 3 - Motor Driver 
 
-![](Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.003.jpeg)
+![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.003.jpeg)
 
 Imagem 4 - RP 2040
 
-![](Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.004.jpeg)
+![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.004.jpeg)
 
 
 
