@@ -3,6 +3,8 @@
 
 INSPER - FAB LAB - L.A.C
 
+Felipe R Lambak - Eng Mecânica - Terceiro Semestre
+
 
 <a name="_cvq19n9y8xgi"></a>[**Introdução	1**](#_takan11gr9mj)**
 
