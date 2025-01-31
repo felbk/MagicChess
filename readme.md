@@ -22,37 +22,43 @@ INSPER - FAB LAB - L.A.C
 
 [Controle do motor	4](#_qgr7zwve0dyx)
 
-[Interrupção de fim de curso	4](#_y4ut5mzac8zj)
+[Interrupção de fim de curso	5](#_y4ut5mzac8zj)
 
-[Controle do servo motor	4](#_bnupxefxgixt)
+[Controle do servo motor	5](#_bnupxefxgixt)
 
-[Calibração da movimentação	4](#_l6c5fa4m9zmt)
+[Calibração da movimentação	5](#_l6c5fa4m9zmt)
 
-[GitHub do Projeto (Código comentado)	4](#_hctr18ahn1q6)
+[GitHub do Projeto (Código comentado)	5](#_hctr18ahn1q6)
 
-[**Resultados	5**](#_600ofuky0g7s)
+[Controle por teclado	5](#_ke2gmir3um2o)
 
-[Calibração do movimento	5](#_q6ggximrl2tj)
+[Calibração do teclado	5](#_wonl68ixdciz)
 
-[Limites de movimento	5](#_v40o9qvisune)
+[Código de leitura	6](#_ebli1vih5fvh)
 
-[Movimentação funcionando	5](#_mms68medsmg6)
+[**Resultados	6**](#_600ofuky0g7s)
 
-[Movimentação por terminal	5](#_w0vrln22rawh)
+[Calibração do movimento	6](#_q6ggximrl2tj)
 
-[Movimentação das peças	5](#_f8eicu121afk)
+[Limites de movimento	6](#_v40o9qvisune)
 
-[Vídeo do funcionamento	5](#_by1dn4193rdi)
+[Movimentação funcionando	6](#_mms68medsmg6)
 
-[Problemas com a corrente	6](#_5jnqcq5qd84r)
+[Movimentação por terminal	6](#_w0vrln22rawh)
 
-[Instabilidade dos motores	6](#_wm7y8pxr84u6)
+[Função do jogo e regras provisórias	7](#_dmautibutsq)
 
-[**Conclusão	6**](#_bnsozly5gq8i)
+[Movimentação das peças	7](#_f8eicu121afk)
 
-[**Próximos passos	6**](#_o6ec59f1ztf)
+[Vídeo do funcionamento	7](#_by1dn4193rdi)
 
-[**Referências	7**](#_liacgrsjr2tw)
+[Interferência eletromagnética	7](#_cf7o4i63xzm7)
+
+[**Conclusão	7**](#_bnsozly5gq8i)
+
+[**Próximos passos	7**](#_o6ec59f1ztf)
+
+[**Referências	9**](#_liacgrsjr2tw)
 # <a name="_5lv5aocznfj6"></a>
 # <a name="_takan11gr9mj"></a>Introdução
 Este projeto iniciou-se na segunda semana de janeiro, durante o estágio de férias de 25.1 no Fab Lab em parceria com o Laboratório de Arquitetura de Computadores  a fim de explorar o conteúdo da disciplina de sistemas embarcados, com uma estrutura do tabuleiro já antes construída teve-se como objetivo utilizá-la para movimentar peças de xadrez, baseando-se em um sistema com uma RaspBerry Pi Pico, a ideia deste dispositivo se inspira no “Xadrez de Bruxo” do universo fictício de Harry Potter, jogo cujas peças se movem apenas com os comandos do usuário.
@@ -76,15 +82,22 @@ Para compor a parte eletrônica do projeto foram utilizados os seguintes materia
 - 1 Protoboard
 - 1 Placa de Circuito Perfurada
 - Jumpers
+- 8 Botões
+- 12 resistores de 10K Ohms
+
 
 Durante os primeiros testes os componentes foram inseridos na protoboard e conectados utilizando jumpers, porém posteriormente as ligações foram transpostas para a placa de circuito perfurada(imagem 1) e as conexões foram soldadas com fios menores no verso da placa seguindo o esquema (imagem 2). 
 
-Imagem 1 - Placa de circuito perfurada![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.001.jpeg)
+Imagem 1 - Placa de circuito perfurada
+
+![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.001.jpeg)
+
+
 
 
 Imagem 2 - Esquema elétrico
 
-![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.002.png)
+![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.002.png)
 
 Como pode-se observar no esquema, o controle de PWM (Pulse Width Modulation) dos dois drivers foram unificados para facilitar o controle e as conexões
 
@@ -92,11 +105,12 @@ Além disso, os drivers (imagem 3) precisam ser alimentados com 12V para os moto
 
 Imagem 3 - Motor Driver 
 
-![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.003.jpeg)
+![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.003.jpeg)
+
 
 Imagem 4 - RP 2040
 
-![](img/Aspose.Words.7658cf1b-cf23-411e-9594-565cf72ed013.004.jpeg)
+![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.004.jpeg)
 
 
 
@@ -122,8 +136,24 @@ Imagem 4 - RP 2040
 `	`Arquivo principal (main.c) localizado na pasta main do repositório: 
 
 <https://github.com/felbk/infra-test.git> .
+## <a name="_ke2gmir3um2o"></a>Controle por teclado
+A fim de controlar a movimentação para permitir uma versão jogador contra jogador, construiu-se um teclado utilizando botões com um divisor de tensão para identificá-los utilizando apenas uma porta analógica, conforme demonstrado na imagem 5 
 
-# <a name="_600ofuky0g7s"></a>Resultados
+imagem 5 - Teclado
+
+![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.005.jpeg)
+### <a name="_wonl68ixdciz"></a>Calibração do teclado
+`	`Para identificar os botões pela tensão de entrada, foi preciso realizar a leitura da entrada de 0 a 4096, observando a flutuação sem botão pressionado (nulo) e com os botões, observando os valores fornecidos na tabela 1 , para decidir qual botão foi selecionado, o sistema faz uma média de 10 valores, considerando apenas os não nulos.
+
+
+|Botão|nulo|1|2|3|4|5|6|7|8|
+| :- | :- | :- | :- | :- | :- | :- | :- | :- | :- |
+|<=|500|680|780|980|1280|1680|2680|3580|4096|
+
+### <a name="_ebli1vih5fvh"></a>Código de leitura
+`	`Aplicada na função Jogando( ), a leitura para movimentação segue a seguinte ordem: coluna inicial (A a H) ou X inicial , linha inicial (1 a 8) ou Y inicial , coluna final (A a H) ou X final , linha final (1 a 8) ou Y final.
+#
+# <a name="_cgjn94290v9m"></a><a name="_600ofuky0g7s"></a>Resultados
 ## <a name="_q6ggximrl2tj"></a>Calibração do movimento
 `	`Após o processo de medição obtiveram-se as informações de que a máquina se move 0,8 mm para cada passo do motor (step completo) e que cada casa do tabuleiro possui largura e altura de 35mm.
 
@@ -133,6 +163,12 @@ Imagem 4 - RP 2040
 ### <a name="_w0vrln22rawh"></a>Movimentação por terminal
 `	`Após pouco mais de duas semanas do início do projeto, o protótipo podia se mover para norte, sul, leste, oeste e para as bissetrizes, a movimentação do eixo pode ser ativada digitando “X999/” no terminal, com 9 podendo ser qualquer algarismo e X podendo ser: N ,S , L ,O, Q (NO) , E (NE) , D (SE) , A  (SO), além do comando G999/ que posiciona isoladamente o servo motor no ponto desejado de 0 a 180 graus. Ao inserir qualquer comando citado acima com o valor 0 a frente, a máquina vai para sua origem (SO).
 
+`	`Porém essa movimentação foi deixada apenas para debug, após a implementação da função jogando( ).
+### <a name="_dmautibutsq"></a>Função do jogo e regras provisórias
+`	`Para permitir uma versão competitiva local, além do controle por teclado, implementou-se uma matriz global para guardar a posição inicial das peças, que são alteradas antes de uma movimentação pela função análise() , a qual também verifica se haverá  captura de peça ou não.
+
+`	`Até o momento as regras não restringem movimento, nem verificam jogadas irregulares.
+
 ### <a name="_f8eicu121afk"></a>Movimentação das peças
 `	`Com a função mover(Xi , Yi , Xf , Yf) é possível pegar uma peça de uma casa do tabuleiro e levar a outra, com as coordenadas iniciais e finais fornecidas. Nesta função, além de mover-se na horizontal vertical e diagonal, caso a movimentação seja diferente das anteriores ele irá se mover pelas linhas das casas do tabuleiro para evitar colidir em outras peças, visto que em uma partida essa movimentação só seria possível com o cavalo.
 
@@ -140,11 +176,8 @@ Imagem 4 - RP 2040
 
 ### <a name="_by1dn4193rdi"></a>[Vídeo do funcionamento](https://drive.google.com/file/d/1mCfQMoOVpqm8S3l5HQvBzTrIOA7VV4gu/view?usp=sharing)
 
-## <a name="_5jnqcq5qd84r"></a>Problemas com a corrente
-`	`Durante o funcionamento dos motores a corrente esteve entre 1.5 a 2 A o que aqueceu o sistema e causou instabilidades entre um teste e outro 
-
-## <a name="_wm7y8pxr84u6"></a>Instabilidade dos motores
-`	`Diversas vezes o código que antes funcionava, passava a apresentar instabilidade e o ruído dos motores aumentava, ou até mesmo causava erros no passo.
+## <a name="_cf7o4i63xzm7"></a>Interferência eletromagnética
+`	`Algumas vezes o programa sofreu uma interrupção sem padrão de repetição e que não tinha relação com desvio na lógica de programação , principalmente quando os fios dos detectores de fim de curso ou do servomotor, estavam próximos ao motor, o que pode indicar que o motivo seja uma interferência do campo gerado ao movê-lo.
 # <a name="_bnsozly5gq8i"></a>Conclusão
 `	`A movimentação dos motores e a alimentação 12V são os fatores que mais aparentam estar relacionados com os problemas apresentados. Dessa forma recomenda-se, como próximos passos, rever as conexões de alimentação, assim como pensar uma forma de otimizar a movimentação dos motores, como utilizar mais de um núcleo do microcontrolador para movimentar os dois motores de forma separada a fim de evitar problemas.
 
@@ -152,8 +185,7 @@ Imagem 4 - RP 2040
 # <a name="_o6ec59f1ztf"></a>Próximos passos 
 `	`Após mitigar os problemas apresentados neste relatório, o projeto pode ser incrementado das seguintes maneiras:
 
-- Controle da função mover por teclado físico (Switches ou touch) para PvP
-- Movimentação de captura e remoção das peças do tabuleiro
+- Revisão de captura e remoção das peças do tabuleiro
 - Movimentação de roque na ala do rei e da rainha
 - Desenvolvimento de um software para análise e validação das regras pré-movimento
 - Movimentação por reconhecimento de voz do jogador
