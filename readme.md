@@ -90,14 +90,14 @@ Durante os primeiros testes os componentes foram inseridos na protoboard e conec
 
 Imagem 1 - Placa de circuito perfurada
 
-![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.001.jpeg)
+![](img/img1.jpeg)
 
 
 
 
 Imagem 2 - Esquema elétrico
 
-![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.002.png)
+![](img/img2.png)
 
 Como pode-se observar no esquema, o controle de PWM (Pulse Width Modulation) dos dois drivers foram unificados para facilitar o controle e as conexões
 
@@ -105,12 +105,12 @@ Além disso, os drivers (imagem 3) precisam ser alimentados com 12V para os moto
 
 Imagem 3 - Motor Driver 
 
-![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.003.jpeg)
+![](img/img3.jpeg)
 
 
 Imagem 4 - RP 2040
 
-![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.004.jpeg)
+![](img/img4.jpeg)
 
 
 
@@ -141,7 +141,7 @@ A fim de controlar a movimentação para permitir uma versão jogador contra jog
 
 imagem 5 - Teclado
 
-![](img/Aspose.Words.f2ba2790-def8-4415-8fe4-9fa30c9ddcc0.005.jpeg)
+![](img/img5.jpeg)
 ### <a name="_wonl68ixdciz"></a>Calibração do teclado
 `	`Para identificar os botões pela tensão de entrada, foi preciso realizar a leitura da entrada de 0 a 4096, observando a flutuação sem botão pressionado (nulo) e com os botões, observando os valores fornecidos na tabela 1 , para decidir qual botão foi selecionado, o sistema faz uma média de 10 valores, considerando apenas os não nulos.
 
