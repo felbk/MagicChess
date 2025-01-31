@@ -613,32 +613,6 @@ int main() {
  
     set_origem();
 
-    // mover(7,2 , 7,4);
-    
-    // mover(6,1 , 8,3);
-    
-    // mover(2,1 , 3,3);
-    
-    // mover(1,2 , 1,4);
-
-    // mover(1,1 , 1,3);
-    
-    // mover(7,1 , 6,3);
-
-    // mover(8,3 , 6,1);
-
-    // mover(5,2 , 5 ,4);
-
-    // mover(6,1 , 1,6);
-     
-    // mover(8,2 , 8,4);
-    
-   
-    
-    
-    
-   
-
     while (true) {
 
         if (!STOP) { //Sem detecção de fim de curso
