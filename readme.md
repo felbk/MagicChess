@@ -135,7 +135,7 @@ Imagem 4 - RP 2040
 ### <a name="_hctr18ahn1q6"></a>GitHub do Projeto (Código comentado)
 `	`Arquivo principal (main.c) localizado na pasta main do repositório: 
 
-<https://github.com/felbk/infra-test.git> .
+<https://github.com/felbk/MagicChess.git> .
 ## <a name="_ke2gmir3um2o"></a>Controle por teclado
 A fim de controlar a movimentação para permitir uma versão jogador contra jogador, construiu-se um teclado utilizando botões com um divisor de tensão para identificá-los utilizando apenas uma porta analógica, conforme demonstrado na imagem 5 
 
